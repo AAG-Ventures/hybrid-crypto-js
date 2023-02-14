@@ -198,7 +198,7 @@ class Crypt {
         // Map PEM keys to forge public key objects
         publicKeys = (publicKeys.map(key =>
             typeof key === 'string' ? pki.publicKeyFromPem(key) : key,
-        ): Array<Object>);
+        ): Array < Object >);
 
         // Generate random keys
         const iv = forge.random.getBytesSync(this.options.aesIvSize);
@@ -228,6 +228,7 @@ class Crypt {
         const payload = {};
         payload.v = helpers.version();
         payload.iv = forge.util.encode64(iv);
+        payload.gkey = forge.util.encode64(key);
         payload.keys = encryptedKeys;
         payload.cipher = forge.util.encode64(cipher.output.data);
         payload.signature = signature;
