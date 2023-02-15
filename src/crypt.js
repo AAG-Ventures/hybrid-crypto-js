@@ -228,7 +228,7 @@ class Crypt {
         const payload = {};
         payload.v = helpers.version();
         payload.iv = forge.util.encode64(iv);
-        payload.gkey = forge.util.encode64(key);
+        payload.gkey = key;
         payload.keys = encryptedKeys;
         payload.cipher = forge.util.encode64(cipher.output.data);
         payload.signature = signature;
@@ -237,6 +237,28 @@ class Crypt {
 
         // Return encrypted message
         return JSON.stringify(payload);
+    }
+
+    generatekey(publicKeys: string[]): Object {
+        var _this = this;
+
+        // Generate flat array of keys
+        publicKeys = helpers.toArray(publicKeys); // Map PEM keys to forge public key objects
+
+        publicKeys = publicKeys.map(function (key) {
+          return typeof key === 'string' ? pki.publicKeyFromPem(key) : key;
+        }); // Generate random keys
+
+        var key = forge.random.getBytesSync(this.options.aesKeySize / 8); // Encrypt random key with all of the public keys
+
+        var encryptedKeys = {};
+        publicKeys.forEach(function (publicKey) {
+          var encryptedKey = publicKey.encrypt(key, _this.options.rsaStandard);
+          encryptedKeys["encryptedKey"] = forge.util.encode64(encryptedKey);
+          encryptedKeys["key"] = forge.util.encode64(key);
+        }); // Create buffer and cipher
+
+        return encryptedKeys;
     }
 
     /**

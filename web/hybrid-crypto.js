@@ -210,7 +210,7 @@ function () {
   }, {
     key: "encrypt",
     value: function encrypt(publicKeys, message, signature) {
-      var _this = this;
+      var _this2 = this;
 
       // Generate flat array of keys
       publicKeys = helpers.toArray(publicKeys); // Map PEM keys to forge public key objects
@@ -224,9 +224,9 @@ function () {
 
       var encryptedKeys = {};
       publicKeys.forEach(function (publicKey) {
-        var encryptedKey = publicKey.encrypt(key, _this.options.rsaStandard);
+        var encryptedKey = publicKey.encrypt(key, _this2.options.rsaStandard);
 
-        var fingerprint = _this.fingerprint(publicKey);
+        var fingerprint = _this2.fingerprint(publicKey);
 
         encryptedKeys[fingerprint] = forge.util.encode64(encryptedKey);
       }); // Create buffer and cipher
@@ -243,12 +243,36 @@ function () {
       var payload = {};
       payload.v = helpers.version();
       payload.iv = forge.util.encode64(iv);
+      payload.gkey = key;
       payload.keys = encryptedKeys;
       payload.cipher = forge.util.encode64(cipher.output.data);
       payload.signature = signature;
       payload.tag = cipher.mode.tag && forge.util.encode64(cipher.mode.tag.getBytes()); // Return encrypted message
 
       return JSON.stringify(payload);
+    }
+  }, {
+    key: "generatekey",
+    value: function generatekey(publicKeys) {
+      var _this = this; // Generate flat array of keys
+
+
+      publicKeys = helpers.toArray(publicKeys); // Map PEM keys to forge public key objects
+
+      publicKeys = publicKeys.map(function (key) {
+        return typeof key === 'string' ? pki.publicKeyFromPem(key) : key;
+      }); // Generate random keys
+
+      var key = forge.random.getBytesSync(this.options.aesKeySize / 8); // Encrypt random key with all of the public keys
+
+      var encryptedKeys = {};
+      publicKeys.forEach(function (publicKey) {
+        var encryptedKey = publicKey.encrypt(key, _this.options.rsaStandard);
+        encryptedKeys["encryptedKey"] = forge.util.encode64(encryptedKey);
+        encryptedKeys["key"] = forge.util.encode64(key);
+      }); // Create buffer and cipher
+
+      return encryptedKeys;
     }
     /**
      * Decrypts a message using private RSA key
@@ -29848,9 +29872,9 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
 },{"process/browser.js":50,"timers":51}],52:[function(require,module,exports){
 module.exports={
-    "name": "hybrid-crypto-js",
-    "version": "0.2.4",
-    "description": "Hybrid (RSA+AES) encryption and decryption toolkit for JavaScript",
+    "name": "hybrid-crypto-js-mod",
+    "version": "0.2.4.a",
+    "description": "Modified Hybrid (RSA+AES) encryption and decryption toolkit for JavaScript",
     "main": "lib/index.js",
     "scripts": {
         "prepublish": "npm run build",
@@ -29863,7 +29887,7 @@ module.exports={
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/juhoen/hybrid-crypto-js.git"
+        "url": "https://github.com/AAG-Ventures/hybrid-crypto-js-mod"
     },
     "keywords": [
         "rsa",
@@ -29876,9 +29900,9 @@ module.exports={
     "author": "Juho Enala <juho.enala@gmail.com>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/juhoen/hybrid-crypto-js/issues"
+        "url": "https://github.com/AAG-Ventures/hybrid-crypto-js-mod/issues"
     },
-    "homepage": "https://github.com/juhoen/hybrid-crypto-js",
+    "homepage": "https://github.com/AAG-Ventures/hybrid-crypto-js-mod",
     "dependencies": {
         "node-forge": "^0.8.5"
     },
