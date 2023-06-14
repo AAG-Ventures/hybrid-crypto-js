@@ -29873,7 +29873,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 },{"process/browser.js":50,"timers":51}],52:[function(require,module,exports){
 module.exports={
     "name": "hybrid-crypto-js-mod",
-    "version": "0.2.4.a",
+    "version": "0.2.4",
     "description": "Modified Hybrid (RSA+AES) encryption and decryption toolkit for JavaScript",
     "main": "lib/index.js",
     "scripts": {
